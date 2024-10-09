@@ -19,29 +19,27 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
     in
-    # pythonEnv = pkgs.python3.withPackages (python-packages: [
-    #   python-packages.vobject
-    #   python-packages.webdavclient3
-    # ]);
+    # nodeEnv = {};#nodePackages_latest.prettier
     {
 
       devShells.${system}.default = pkgs.mkShell { packages = [ ]; };
       packages = {
         ${system}.default = pkgs.writeShellApplication {
-          name = "show-nixos-org";
+          name = "fmtapp";
           runtimeInputs = [
-            pkgs.curl
-            pkgs.w3m
+            pkgs.nodePackages.prettier
+            pkgs.ruff
+            # nodePackages_latest.prettier-plugin-toml
           ];
           text = ''
-            curl -s 'https://nixos.org' | w3m -dump -T text/html
+            prettier "''$@"
           '';
         };
       };
 
       # apps.${system}.default = {
       #   type = "app";
-      #   program = "${self.packages.x86_64-linux.blender_2_79}/bin/blender";
+      #   program = pkgs.lib.getBin "${self.packages.${system}.default}";
       # };
 
     };
