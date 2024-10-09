@@ -23,12 +23,6 @@
       treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
     in
     {
-      # Inside outputs' `flake-parts.lib.mkFlake` 
-      # imports = [
-      #   inputs.treefmt-nix.flakeModule
-      #   inputs.flake-root.flakeModule
-      # ];
-
       # for `nix fmt`
       # formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
       formatter.${system} = treefmtEval.config.build.wrapper;
@@ -39,6 +33,7 @@
       };
 
       devShells.${system}.default = pkgs.mkShell { packages = [ pkgs.treefmt2 ]; };
+
       packages = {
         ${system} = {
           default = pkgs.writeShellApplication {
