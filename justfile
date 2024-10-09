@@ -30,3 +30,7 @@ sbomnix:
 
 # nix run github:tiiuae/sbomnix#repology_cli -- --pkg_search 'firef' --repository 'nix_unstable'
 # nix run github:tiiuae/sbomnix#repology_cve -- [-h] [--verbose VERBOSE] [--out [OUT]] PKG_NAME PKG_VERSION
+
+# Static checker for nix code
+statix:
+    nix run git+https://git.peppe.rs/languages/statix -- check .

@@ -18,7 +18,7 @@
       ];
       pname = "fmtapp";
       # Small tool to iterate over each systems
-      eachSystem = fn: nixpkgs.lib.genAttrs (systems) (sys: fn nixpkgs.legacyPackages.${sys});
+      eachSystem = fn: nixpkgs.lib.genAttrs systems (sys: fn nixpkgs.legacyPackages.${sys});
       # out: {linux: fn(nixpkgs), ...}
       #
       # Eval the treefmt modules from ./treefmt.nix
