@@ -15,6 +15,8 @@ run: build
 fmt: build
     nix fmt
 
+# nix run github:tiiuae/sbomnix#nixgraph -- --depth 100 .#formatter.x86_64-linux
+
 check: build
     nix flake check
 
