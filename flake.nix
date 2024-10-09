@@ -12,52 +12,52 @@
   outputs =
     inputs@{ self, nixpkgs, ... }:
     let
-      system = "x86_64-linux";
-      # systems = [ ${system} ];
-      pkgs = import nixpkgs { inherit system; };
+      systems = [
+        "x86_64-linux"
+        # "x86_64-darwin"
+      ];
       pname = "fmtapp";
       # Small tool to iterate over each systems
-      # eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
+      eachSystem = fn: nixpkgs.lib.genAttrs (systems) (sys: fn nixpkgs.legacyPackages.${sys});
+      # out: {linux: fn(nixpkgs), ...}
+      #
       # Eval the treefmt modules from ./treefmt.nix
-      # treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./treefmt.nix);
-      treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+      treefmtEval = eachSystem (ps: inputs.treefmt-nix.lib.evalModule ps ./treefmt.nix);
     in
+    # out: {linux: evalModule(nixpkgs, config), ...}
     {
       # for `nix fmt`
-      # formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
-      formatter.${system} = treefmtEval.config.build.wrapper;
+      formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
       # for `nix flake check`
-      # checks = eachSystem (pkgs: { formatting = treefmtEval.${pkgs.system}.config.build.check self; });
-      checks.${system} = {
-        formatting = treefmtEval.config.build.check self;
-      };
+      checks = eachSystem (pkgs: {
+        formatting = treefmtEval.${pkgs.system}.config.build.check self;
+      });
 
-      devShells.${system}.default = pkgs.mkShell { packages = [ pkgs.treefmt2 ]; };
+      devShells = eachSystem (pkgs: {
+        default = pkgs.mkShell { packages = [ ]; };
+      });
 
-      packages = {
-        ${system} = {
-          default = pkgs.writeShellApplication {
-            name = "${pname}";
-            runtimeInputs = [
-              pkgs.nodePackages.prettier
-              pkgs.ruff
-              pkgs.nixfmt-rfc-style
-              pkgs.nodePackages_latest.prettier-plugin-toml
-            ];
-            text = ''
-              echo "prettier ''$(prettier --version)"
-              ruff --version
-              nixfmt --version
-            '';
-          };
+      packages = eachSystem (pkgs: {
+        default = pkgs.writeShellApplication {
+          name = "${pname}";
+          runtimeInputs = with pkgs; [
+            nodePackages.prettier
+            ruff
+            nixfmt-rfc-style
+          ];
+          text = ''
+            echo "prettier ''$(prettier --version)"
+            ruff --version
+            nixfmt --version
+          '';
         };
-      };
+      });
 
-      apps.${system}.default = {
-        type = "app";
-        program = "${self.packages.${system}.default}/bin/${pname}";
-        # program = pkgs.lib.getBin "${self.packages.${system}.default}";
-      };
-
+      apps = eachSystem (pkgs: {
+        pname = {
+          type = "app";
+          program = "${self.packages.${pkgs.system}.default}/bin/${pname}";
+        };
+      });
     };
 }
