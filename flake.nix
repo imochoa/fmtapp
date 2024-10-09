@@ -7,10 +7,6 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # flake-root = {
-    #   url = "github:srid/flake-root";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
   };
 
   outputs =
@@ -38,13 +34,11 @@
       formatter.${system} = treefmtEval.config.build.wrapper;
       # for `nix flake check`
       # checks = eachSystem (pkgs: { formatting = treefmtEval.${pkgs.system}.config.build.check self; });
-      # checks = eachSystem (pkgs: { formatting = treefmtEval.${pkgs.system}.config.build.check self; });
-
-      devShells.${system}.default = pkgs.mkShell {
-        packages = [
-          pkgs.treefmt2
-        ];
+      checks.${system} = {
+        formatting = treefmtEval.config.build.check self;
       };
+
+      devShells.${system}.default = pkgs.mkShell { packages = [ pkgs.treefmt2 ]; };
       packages = {
         ${system} = {
           default = pkgs.writeShellApplication {
