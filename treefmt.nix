@@ -10,10 +10,13 @@
 
   programs.just.enable = true;
   programs.prettier.enable = true;
+  programs.prettier.excludes = [ "T1.md" ];
+
   programs.shfmt.enable = true;
   programs.shellcheck.enable = true;
   # programs.toml-sort.enable=true;
-  programs.nixfmt-rfc-style.enable = true;
+  # programs.nixfmt-rfc-style.enable = true;
+  programs.nixfmt.enable = true;
 
   # # Enable the terraform formatter
   # programs.terraform.enable = true;
