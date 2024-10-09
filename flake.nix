@@ -18,14 +18,31 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
-      # pythonEnv = pkgs.python3.withPackages (python-packages: [
-      #   python-packages.vobject
-      #   python-packages.webdavclient3
-      # ]);
     in
-    rec {
+    # pythonEnv = pkgs.python3.withPackages (python-packages: [
+    #   python-packages.vobject
+    #   python-packages.webdavclient3
+    # ]);
+    {
 
-      devShells.${system}.default = pkgs.mkShell { packages = [  ] ; };
-
+      devShells.${system}.default = pkgs.mkShell { packages = [ ]; };
+      packages = {
+        ${system}.default = pkgs.writeShellApplication {
+          name = "show-nixos-org";
+          runtimeInputs = [
+            pkgs.curl
+            pkgs.w3m
+          ];
+          text = ''
+            curl -s 'https://nixos.org' | w3m -dump -T text/html
+          '';
+        };
       };
+
+      # apps.${system}.default = {
+      #   type = "app";
+      #   program = "${self.packages.x86_64-linux.blender_2_79}/bin/blender";
+      # };
+
+    };
 }
