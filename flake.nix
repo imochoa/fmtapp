@@ -9,6 +9,15 @@
     };
   };
 
+  # For debugging: https://github.com/NixOS/nixpkgs/blob/master/lib/debug.nix
+  # * `trace`-like functions take two values, print the first to stderr and return the second.
+  # * `traceVal`-like functions take one argument which both printed and returned.
+  # * `traceSeq`-like functions fully evaluate their traced value before printing (not just to “weak head normal form” like trace does by default).
+  # * Functions that end in `-Fn` take an additional function as their first argument, which is applied to the traced value before it is printed.
+
+  # builtins.trace
+  # nixpkgs.lib.debug.traceVal 
+
   outputs =
     inputs@{ self, nixpkgs, ... }:
     let
